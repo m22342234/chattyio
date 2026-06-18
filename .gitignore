@@ -4,9 +4,6 @@
 # Dependencies
 node_modules/
 
-# Build output (regenerated on deploy via npm start)
-client/public/css/tailwind.css
-client/public/og-cover.png
 
 # OS
 .DS_Store

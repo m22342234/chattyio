@@ -10,7 +10,7 @@
     "build:css": "tailwindcss -i ./client/css/input.css -o ./client/public/css/tailwind.css --minify",
     "build:og": "node scripts/generate-og.js",
     "build": "npm run build:css && npm run build:og",
-    "start": "npm run build && node server/index.js",
+    "start": "node server/index.js",
     "dev": "nodemon server/index.js"
   },
   "dependencies": {
