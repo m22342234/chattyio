@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /faq
+Allow: /safety
+Allow: /privacy
+Allow: /terms
+
+# Exclude interactive app routes and server internals from indexing
+Disallow: /chat
+Disallow: /socket.io/
+Disallow: /config.js
+Disallow: /healthz
+
+Sitemap: https://chattyio.com/sitemap.xml

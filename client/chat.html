@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>Chattyio.com — Chat Lobby</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="/css/tailwind.css" />
+  <style>
+    body { background: radial-gradient(ellipse at 25% 0%, rgba(79,70,229,0.12) 0%, transparent 50%), #030712; }
+    #chat-messages { scroll-behavior: smooth; }
+  </style>
+</head>
+<body class="text-gray-100 font-sans min-h-screen flex flex-col">
+
+  <!-- ════════ MODAL: Session Terminated ══════════════════════════════════════ -->
+  <div id="modal-terminated"
+       class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl border border-red-900/60" style="background:#111827;">
+      <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+           style="background:rgba(127,29,29,0.4); border:1px solid rgba(185,28,28,0.4);">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-red-400">
+          <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <h2 class="text-red-400 font-bold text-lg mb-3">Session Terminated</h2>
+      <p id="terminated-reason" class="text-gray-400 text-sm mb-6 leading-relaxed"></p>
+      <button id="terminated-ok-btn"
+              class="px-8 py-3 rounded-xl text-sm text-white border border-gray-700 hover:border-gray-500 transition-colors"
+              style="background:#1f2937;">
+        Return to Home
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════ VIEW: Lobby Directory ══════════════════════════════════════════ -->
+  <div id="view-lobby" class="flex flex-col min-h-screen pb-14">
+
+    <header class="sticky top-0 z-20 backdrop-blur-sm border-b px-4 py-3"
+            style="background:rgba(3,7,18,0.95); border-color:rgba(255,255,255,0.07);">
+      <div class="max-w-5xl mx-auto flex items-center justify-between gap-3">
+
+        <!-- Brand + status -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <div class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-indigo-400">
+              <path fill-rule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97z" clip-rule="evenodd"/>
+            </svg>
+            <span class="font-bold text-white text-base tracking-tight">Chattyio</span>
+          </div>
+          <span class="text-gray-800 hidden sm:inline text-sm">|</span>
+          <div class="flex items-center gap-2">
+            <span id="conn-status-dot" class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+            <span id="conn-status-text" class="text-xs text-yellow-400">Connecting…</span>
+            <span class="text-gray-800 text-xs hidden sm:inline">·</span>
+            <span id="stats-bar" class="text-xs text-gray-500 hidden sm:inline"></span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2">
+          <button id="mailbox-btn"
+                  class="relative p-2.5 rounded-xl text-gray-400 hover:text-white transition-colors border border-gray-800 hover:border-gray-600"
+                  style="background:#111827;" title="Chat requests">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+              <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z"/>
+              <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z"/>
+            </svg>
+            <span id="mailbox-badge"
+                  class="hidden absolute -top-1 -right-1 min-w-[1.1rem] h-[1.1rem] rounded-full bg-red-500 text-white font-bold flex items-center justify-center px-0.5 leading-none"
+                  style="font-size:10px;">0</span>
+          </button>
+          <button id="random-match-btn"
+                  class="flex items-center gap-2 px-4 py-2.5 text-white font-semibold rounded-xl text-sm transition-all duration-150 active:scale-95"
+                  style="background:linear-gradient(135deg,#4f46e5,#7c3aed); box-shadow:0 4px 16px rgba(79,70,229,0.3);"
+                  onmouseover="this.style.background='linear-gradient(135deg,#4338ca,#6d28d9)';"
+                  onmouseout="this.style.background='linear-gradient(135deg,#4f46e5,#7c3aed)';">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+              <path fill-rule="evenodd" d="M15.75 4.5a3 3 0 11.825 2.066l-8.421 4.679a3.002 3.002 0 010 1.51l8.421 4.679a3 3 0 11-.729 1.31l-8.421-4.678a3 3 0 110-4.132l8.421-4.679a3 3 0 01-.096-.755z" clip-rule="evenodd"/>
+            </svg>
+            <span class="hidden sm:inline">Random Match</span>
+            <span class="sm:hidden">Random</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 max-w-5xl w-full mx-auto px-4 py-5">
+      <div class="flex gap-5 items-start">
+
+        <!-- User list -->
+        <div class="flex-1 min-w-0">
+          <!-- Search -->
+          <div class="relative mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                 class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none">
+              <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd"/>
+            </svg>
+            <input type="text" id="user-search" placeholder="Search users…" autocomplete="off"
+                   class="w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none transition-colors"
+                   style="background:#111827; border-color:rgba(255,255,255,0.07);"
+                   onfocus="this.style.borderColor='#4f46e5';"
+                   onblur="this.style.borderColor='rgba(255,255,255,0.07)';" />
+          </div>
+
+          <div id="user-grid" class="rounded-2xl overflow-hidden border" style="background:#111827; border-color:rgba(255,255,255,0.07);">
+            <p class="text-center text-gray-600 py-14 text-sm">Waiting…</p>
+          </div>
+
+          <!-- Pagination -->
+          <div id="pagination" class="hidden flex items-center justify-between mt-3 px-1">
+            <button id="page-prev"
+                    class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs text-gray-400 border border-gray-800 hover:text-white hover:border-gray-600 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                    style="background:#111827;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd"/>
+              </svg>
+              Prev
+            </button>
+            <span id="page-info" class="text-xs text-gray-600"></span>
+            <button id="page-next"
+                    class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs text-gray-400 border border-gray-800 hover:text-white hover:border-gray-600 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                    style="background:#111827;">
+              Next
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                <path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 4.03a.75.75 0 011.06-1.06l7.5 7.5z" clip-rule="evenodd"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Static ads (desktop only) -->
+        <div class="hidden lg:flex flex-col gap-4 shrink-0 w-64">
+          <div class="rounded-2xl border flex items-center justify-center h-64" style="background:#111827; border-color:rgba(255,255,255,0.07);">
+            <div class="text-center text-gray-800 text-xs">
+              <p class="font-mono">AD_SIDEBAR_1</p>
+              <p class="mt-1">300×250</p>
+            </div>
+          </div>
+          <div class="rounded-2xl border flex items-center justify-center h-64" style="background:#111827; border-color:rgba(255,255,255,0.07);">
+            <div class="text-center text-gray-800 text-xs">
+              <p class="font-mono">AD_SIDEBAR_2</p>
+              <p class="mt-1">300×250</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ VIEW: Chat Requests Mailbox ════════════════════════════════════ -->
+  <div id="view-requests" class="hidden flex flex-col min-h-screen pb-14">
+
+    <header class="sticky top-0 z-20 backdrop-blur-sm border-b px-4 py-3"
+            style="background:rgba(3,7,18,0.95); border-color:rgba(255,255,255,0.07);">
+      <div class="max-w-5xl mx-auto flex items-center gap-3">
+        <button id="back-to-lobby-btn"
+                class="flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+            <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd"/>
+          </svg>
+          Back
+        </button>
+        <span class="text-gray-800">|</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-indigo-400">
+          <path fill-rule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97z" clip-rule="evenodd"/>
+        </svg>
+        <span class="font-bold text-white text-sm">Chattyio</span>
+        <span class="text-gray-600 text-sm">/</span>
+        <span class="text-gray-300 text-sm">Messages</span>
+      </div>
+    </header>
+
+    <div class="flex-1 max-w-5xl w-full mx-auto px-4 py-6">
+      <div id="requests-list" class="rounded-2xl overflow-hidden border" style="background:#111827; border-color:rgba(255,255,255,0.07);">
+        <div class="text-center py-16">
+          <div class="w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center" style="background:#1f2937;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-gray-700">
+              <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z"/>
+              <path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z"/>
+            </svg>
+          </div>
+          <p class="text-gray-600 text-sm">No pending chat requests</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ VIEW: Active Chat Workspace ════════════════════════════════════ -->
+  <div id="view-chat" class="hidden flex flex-col min-h-screen pb-14">
+
+    <header class="sticky top-0 z-20 backdrop-blur-sm border-b px-4 py-3"
+            style="background:rgba(3,7,18,0.95); border-color:rgba(255,255,255,0.07);">
+      <div class="max-w-2xl mx-auto flex items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-1.5 mb-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 text-indigo-400">
+              <path fill-rule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97z" clip-rule="evenodd"/>
+            </svg>
+            <span class="text-xs text-gray-600 tracking-wide">Chattyio</span>
+          </div>
+          <p id="partner-info" class="text-sm text-white font-medium"></p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="report-btn"
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-red-900/60 text-red-400 hover:text-white hover:bg-red-700/50 transition-colors"
+                  style="background:rgba(127,29,29,0.3);">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+              <path fill-rule="evenodd" d="M3 2.25a.75.75 0 01.75.75v.54l1.838-.46a9.75 9.75 0 016.712.649l.108.054a8.25 8.25 0 005.58.652l3.109-.732a.75.75 0 01.917.81 47.784 47.784 0 00.005 10.337.75.75 0 01-.574.812l-3.114.733a9.75 9.75 0 01-6.594-.77l-.108-.054a8.25 8.25 0 00-5.69-.552l-1.832.46V19.5a.75.75 0 01-1.5 0V3A.75.75 0 013 2.25z" clip-rule="evenodd"/>
+            </svg>
+            Report
+          </button>
+          <button id="leave-chat-btn"
+                  class="px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-white border border-gray-800 hover:border-gray-600 transition-colors"
+                  style="background:#111827;">
+            Back
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div id="chat-messages"
+         class="flex-1 overflow-y-auto max-w-2xl w-full mx-auto px-4 py-4 space-y-1">
+    </div>
+
+    <div id="url-error" class="hidden max-w-2xl mx-auto w-full px-4 mb-2">
+      <div class="border border-red-900/60 rounded-lg px-3 py-2 text-sm text-red-400" style="background:rgba(69,10,10,0.5);">
+        Links and URLs are not permitted in this chat.
+      </div>
+    </div>
+
+    <div class="sticky bottom-14 backdrop-blur-sm border-t px-4 py-3 z-10"
+         style="background:rgba(3,7,18,0.97); border-color:rgba(255,255,255,0.07);">
+      <div class="max-w-2xl mx-auto flex items-center gap-2">
+        <input type="text" id="msg-input"
+               placeholder="Type a message…"
+               maxlength="2000"
+               autocomplete="off"
+               class="flex-1 border rounded-xl px-4 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none transition-colors"
+               style="background:#0f172a; border-color:#1f2937;"
+               onfocus="this.style.borderColor='#4f46e5';"
+               onblur="this.style.borderColor='#1f2937';" />
+        <button id="send-btn"
+                class="shrink-0 px-4 py-2.5 text-white rounded-xl text-sm font-medium transition-all duration-150 active:scale-95"
+                style="background:linear-gradient(135deg,#4f46e5,#7c3aed);"
+                onmouseover="this.style.background='linear-gradient(135deg,#4338ca,#6d28d9)';"
+                onmouseout="this.style.background='linear-gradient(135deg,#4f46e5,#7c3aed)';">
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ STICKY FOOTER AD ════════════════════════════════════════════════ -->
+  <div class="fixed bottom-0 left-0 w-full z-40 h-14 border-t flex items-center justify-center"
+       style="background:#030712; border-color:rgba(255,255,255,0.06);">
+    <div class="text-center text-gray-800 text-xs">
+      <span class="font-mono">AD_STICKY_FOOTER</span>
+      <span class="ml-2">728×90 / 320×50</span>
+    </div>
+  </div>
+
+  <script src="/config.js"></script>
+  <script src="/js/analytics.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/lobby.js?v=9"></script>
+
+</body>
+</html>

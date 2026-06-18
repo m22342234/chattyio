@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- ── Primary SEO ─────────────────────────────────────────────────────── -->
+  <title>Chattyio.com — Free Anonymous Chat | No Account, No Logs</title>
+  <meta name="description"
+        content="Join Chattyio for free anonymous chat with real people worldwide. No account, no logs, zero data retention — just instant text chat that disappears when you leave." />
+  <meta name="keywords"
+        content="chattyio, anonymous chat, free chat, instant text chat, secure messaging, stranger chat, random chat, online chat, no registration chat" />
+  <link rel="canonical" href="https://chattyio.com/" />
+
+  <!-- ── Open Graph ───────────────────────────────────────────────────────── -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://chattyio.com/" />
+  <meta property="og:title"       content="Chattyio — Free Anonymous Chat" />
+  <meta property="og:description" content="Real conversations, zero traces. Instant P2P text chat via WebRTC — no account required." />
+  <meta property="og:image"       content="https://chattyio.com/og-cover.png" />
+
+  <!-- ── Twitter Card ─────────────────────────────────────────────────────── -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Chattyio — Free Anonymous Chat" />
+  <meta name="twitter:description" content="Real conversations, zero traces. Instant P2P messaging via WebRTC. No account, no logs." />
+  <meta name="twitter:image"       content="https://chattyio.com/og-cover.png" />
+
+  <!-- ── JSON-LD Structured Data ──────────────────────────────────────────── -->
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Chattyio",
+      "url": "https://chattyio.com",
+      "description": "Free anonymous text chat with zero data retention — no account required",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://chattyio.com/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Chattyio",
+      "url": "https://chattyio.com",
+      "applicationCategory": "CommunicationApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires a modern browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Free anonymous text chat with real people worldwide. Messages are relayed in real time and never stored. No account, no logs, zero data retention."
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Chattyio",
+      "url": "https://chattyio.com",
+      "logo": "https://chattyio.com/favicon.svg",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "support@chattyio.com",
+        "contactType": "customer support"
+      }
+    }
+  ]
+  </script>
+
+  <!-- ── Tailwind CSS (CDN) ────────────────────────────────────────────────── -->
+  <link rel="stylesheet" href="/css/tailwind.css" />
+
+  <!-- ── Cloudflare Turnstile ──────────────────────────────────────────────── -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileAPIReady" defer></script>
+
+  <!-- ── Dynamic site config ───────────────────────────────────────────────── -->
+  <script src="/config.js"></script>
+  <script src="/js/analytics.js"></script>
+
+  <style>
+    body { overflow: hidden; }
+  </style>
+</head>
+<body class="font-sans" style="background: radial-gradient(ellipse at 25% 15%, rgba(79,70,229,0.18) 0%, transparent 55%), radial-gradient(ellipse at 75% 85%, rgba(139,92,246,0.12) 0%, transparent 55%), #030712;">
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       BACKGROUND SEO CONTENT — visible to crawlers, covered by modal for users
+       ═════════════════════════════════════════════════════════════════════ -->
+  <div class="p-8 max-w-4xl mx-auto select-none pointer-events-none text-gray-100" aria-hidden="true">
+    <h1 class="text-4xl font-bold mb-4">Chattyio — Free Anonymous Chat</h1>
+    <p class="text-gray-400 text-lg mb-6">
+      Join the Chattyio lobby and start instant P2P text chat with real people — no account,
+      no logs, zero data retention. Secure WebRTC messaging that never touches our servers.
+    </p>
+    <ul class="grid grid-cols-2 gap-4 text-sm text-gray-500">
+      <li>✓ Instant P2P text chat via WebRTC Data Channels</li>
+      <li>✓ Anonymous free chat — no registration required</li>
+      <li>✓ Active online lobby with live user directory</li>
+      <li>✓ Secure messaging — data never touches our servers</li>
+      <li>✓ Gender-based lobby filtering and random matching</li>
+      <li>✓ Community moderation &amp; one-click reporting</li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SPLASH WALL — fixed overlay, blocks all site interaction until accepted
+       ═════════════════════════════════════════════════════════════════════ -->
+  <div id="splash-wall"
+       class="fixed inset-0 z-50 bg-gray-950/90 backdrop-blur-sm overflow-y-auto"
+       role="dialog" aria-modal="true" aria-label="Welcome to Chattyio">
+  <div class="min-h-full flex items-center justify-center py-4">
+
+    <div class="w-full max-w-5xl mx-auto px-4">
+
+      <!-- Desktop two-column: form | ad rail -->
+      <div class="flex flex-col lg:flex-row gap-6 items-start">
+
+        <!-- ── Column 1: Onboarding form ───────────────────────────────── -->
+        <div class="w-full lg:w-3/5 rounded-2xl shadow-2xl overflow-hidden border border-white/10" style="background:#111827;">
+
+          <!-- Branded gradient header -->
+          <div class="px-6 py-5 text-center" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+            <div class="flex items-center justify-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                   class="w-6 h-6" style="color:rgba(255,255,255,0.9)">
+                <path fill-rule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97z" clip-rule="evenodd" />
+              </svg>
+              <span class="text-xl font-bold text-white tracking-tight">Chattyio</span>
+            </div>
+            <p class="text-sm" style="color:rgba(199,210,254,0.9)">Chat. Share. Connect.</p>
+          </div>
+
+          <!-- Trust pills -->
+          <div class="flex justify-center gap-2 px-6 pt-4 flex-wrap">
+            <span class="inline-flex items-center gap-1.5 text-xs text-gray-400 rounded-full px-3 py-1 border border-gray-700" style="background:#0f172a;">
+              <svg class="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/>
+              </svg>
+              No logs
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-xs text-gray-400 rounded-full px-3 py-1 border border-gray-700" style="background:#0f172a;">
+              <svg class="w-3 h-3 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.077 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.077-2.354-1.253V5z" clip-rule="evenodd"/>
+              </svg>
+              Always free
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-xs text-gray-400 rounded-full px-3 py-1 border border-gray-700" style="background:#0f172a;">
+              <svg class="w-3 h-3 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+              </svg>
+              No account needed
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-xs text-gray-400 rounded-full px-3 py-1 border border-gray-700" style="background:#0f172a;">
+              <svg class="w-3 h-3 text-violet-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+              </svg>
+              P2P encrypted
+            </span>
+          </div>
+
+          <!-- Form body -->
+          <div class="px-6 pb-6 pt-4">
+
+            <!-- Compact terms notice -->
+            <div class="rounded-xl p-3 mb-4 text-xs text-gray-400 leading-relaxed border border-gray-700" style="background:rgba(15,23,42,0.6);">
+              <strong class="text-gray-300">18+ only.</strong> Zero tolerance for CSAM, exploitation, or illegal
+              content — violations result in immediate removal and law enforcement reporting.
+              <a href="/safety" class="text-indigo-400 hover:underline ml-1">Community Rules</a>
+            </div>
+
+            <!-- Onboarding form -->
+            <form id="onboarding-form" novalidate autocomplete="off">
+
+              <!-- Honeypot — hidden from real users, catches bots -->
+              <div style="display:none;visibility:hidden;pointer-events:none;" aria-hidden="true">
+                <input type="text" id="honeypot-field" name="user_back_email"
+                       tabindex="-1" autocomplete="off" />
+              </div>
+
+              <!-- Username -->
+              <div class="mb-4">
+                <label for="username" class="block text-sm font-medium text-gray-300 mb-1">
+                  Display Name
+                </label>
+                <input type="text" id="username" name="username"
+                       placeholder="Choose a nickname…"
+                       maxlength="20"
+                       class="w-full border rounded-lg px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-1 text-sm transition-colors"
+                       style="background:#0f172a; border-color:#374151;"
+                       onfocus="this.style.borderColor='#6366f1'; this.style.boxShadow='0 0 0 1px #6366f1';"
+                       onblur="this.style.borderColor='#374151'; this.style.boxShadow='none';"
+                       required />
+              </div>
+
+              <!-- Age + Gender row -->
+              <div class="flex gap-3 mb-4">
+                <div class="flex-1">
+                  <label for="age" class="block text-sm font-medium text-gray-300 mb-1">Age</label>
+                  <select id="age" name="age"
+                          class="w-full border rounded-lg px-3 py-2.5 text-white focus:outline-none text-sm"
+                          style="background:#0f172a; border-color:#374151;"
+                          onfocus="this.style.borderColor='#6366f1';"
+                          onblur="this.style.borderColor='#374151';"
+                          required>
+                    <option value="">Age…</option>
+                  </select>
+                </div>
+                <div class="flex-1">
+                  <label for="gender" class="block text-sm font-medium text-gray-300 mb-1">Gender</label>
+                  <select id="gender" name="gender"
+                          class="w-full border rounded-lg px-3 py-2.5 text-white focus:outline-none text-sm"
+                          style="background:#0f172a; border-color:#374151;"
+                          onfocus="this.style.borderColor='#6366f1';"
+                          onblur="this.style.borderColor='#374151';"
+                          required>
+                    <option value="">Gender…</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Country + Region row -->
+              <div class="flex gap-3 mb-4">
+                <div class="flex-1">
+                  <label for="country" class="block text-sm font-medium text-gray-300 mb-1">Country</label>
+                  <select id="country" name="country"
+                          class="w-full border rounded-lg px-3 py-2.5 text-white focus:outline-none text-sm"
+                          style="background:#0f172a; border-color:#374151;"
+                          onfocus="this.style.borderColor='#6366f1';"
+                          onblur="this.style.borderColor='#374151';"
+                          required>
+                    <option value="">Country…</option>
+                  </select>
+                </div>
+                <div class="flex-1">
+                  <label for="region" class="block text-sm font-medium text-gray-300 mb-1">Region</label>
+                  <select id="region" name="region"
+                          class="w-full border rounded-lg px-3 py-2.5 text-white focus:outline-none text-sm"
+                          style="background:#0f172a; border-color:#374151;"
+                          onfocus="this.style.borderColor='#6366f1';"
+                          onblur="this.style.borderColor='#374151';"
+                          required>
+                    <option value="">Region…</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Cloudflare Turnstile -->
+              <div class="mb-4 flex justify-center">
+                <div id="cf-turnstile-widget"></div>
+              </div>
+
+              <!-- Terms checkbox -->
+              <label class="flex items-start gap-3 mb-4 cursor-pointer group">
+                <input type="checkbox" id="terms-check"
+                       class="mt-0.5 h-4 w-4 rounded border-gray-600 text-indigo-500 focus:ring-indigo-500 shrink-0"
+                       style="background:#0f172a;"
+                       required />
+                <span class="text-xs text-gray-400 group-hover:text-gray-300 transition-colors leading-relaxed">
+                  I confirm I am 18 or older and agree to the
+                  <a href="/terms" class="text-indigo-400 hover:underline">Terms of Service</a>.
+                  I understand illegal content is strictly prohibited.
+                </span>
+              </label>
+
+              <!-- Error message -->
+              <div id="form-error"
+                   class="hidden mb-3 text-sm text-red-400 border border-red-800 rounded-lg px-3 py-2"
+                   style="background:rgba(69,10,10,0.4);"
+                   role="alert">
+              </div>
+
+              <!-- Submit -->
+              <button type="submit" id="submit-btn"
+                      class="w-full text-white font-semibold py-3 rounded-xl text-sm tracking-wide transition-all duration-150"
+                      style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); box-shadow: 0 4px 24px rgba(79,70,229,0.35);"
+                      onmouseover="this.style.background='linear-gradient(135deg,#4338ca 0%,#6d28d9 100%)';"
+                      onmouseout="this.style.background='linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%)';">
+                Start Chatting &rarr;
+              </button>
+            </form>
+
+            <p class="mt-4 text-center text-xs text-gray-600">
+              <a href="/about"   class="hover:text-gray-400 transition-colors">About</a> &middot;
+              <a href="/faq"     class="hover:text-gray-400 transition-colors">FAQ</a> &middot;
+              <a href="/safety"  class="hover:text-gray-400 transition-colors">Safety</a> &middot;
+              <a href="/privacy" class="hover:text-gray-400 transition-colors">Privacy</a> &middot;
+              <a href="/terms"   class="hover:text-gray-400 transition-colors">Terms</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- ── Column 2: Desktop ad rail (hidden on mobile) ───────────── -->
+        <div class="hidden lg:flex lg:w-2/5 flex-col gap-4">
+          <div class="rounded-2xl border border-white/10 flex items-center justify-center min-h-64 p-4" style="background:#111827;">
+            <div class="text-center text-gray-600 text-xs">
+              <p class="text-2xl mb-2">📢</p>
+              <p class="font-mono">AD_UNIT_DESKTOP_RAIL</p>
+              <p class="mt-1">300×250 / 300×600</p>
+            </div>
+          </div>
+          <div class="rounded-2xl border border-white/10 flex items-center justify-center min-h-32 p-4" style="background:#111827;">
+            <div class="text-center text-gray-600 text-xs">
+              <p class="font-mono">AD_UNIT_DESKTOP_RAIL_2</p>
+              <p class="mt-1">300×250</p>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /two-column -->
+
+      <!-- Mobile banner ad -->
+      <div class="lg:hidden mt-4 rounded-xl border border-white/10 flex items-center justify-center h-20" style="background:#111827;">
+        <div class="text-center text-gray-600 text-xs">
+          <span class="font-mono">AD_UNIT_MOBILE_BANNER</span>
+          <span class="ml-2">320×50</span>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /centering wrapper -->
+  </div><!-- /splash-wall -->
+
+  <!-- ── Explicit Turnstile render ─────────────────────────────────────────── -->
+  <script>
+    window.onTurnstileAPIReady = function () {
+      const sitekey = window.APP_CONFIG?.cfSiteKey || '1x00000000000000000000AA';
+      turnstile.render('#cf-turnstile-widget', {
+        sitekey,
+        theme:              'dark',
+        callback:           window.onTurnstileSuccess,
+        'expired-callback': window.onTurnstileExpire,
+      });
+    };
+  </script>
+
+  <!-- ── Geographic data ────────────────────────────────────────────────────── -->
+  <script src="/js/geoData.js"></script>
+  <!-- ── Onboarding logic ───────────────────────────────────────────────────── -->
+  <script src="/js/onboarding.js"></script>
+
+</body>
+</html>
