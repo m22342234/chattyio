@@ -74,23 +74,32 @@ function connectSocket() {
   socket = io({
     forceNew: true,
     auth: {
-      cfToken:    PROFILE.cfToken,
-      username:   PROFILE.username,
-      age:        PROFILE.age,
-      gender:     PROFILE.gender,
-      country:    PROFILE.country,
-      region:     PROFILE.region,
-      back_email: PROFILE.back_email || '',
+      cfToken:      PROFILE.cfToken,
+      sessionToken: sessionStorage.getItem('sessionToken') || '',
+      username:     PROFILE.username,
+      age:          PROFILE.age,
+      gender:       PROFILE.gender,
+      country:      PROFILE.country,
+      region:       PROFILE.region,
+      back_email:   PROFILE.back_email || '',
     },
   });
 
+  // Refresh auth with latest JWT before each reconnect attempt
+  socket.io.on('reconnect_attempt', () => {
+    const t = sessionStorage.getItem('sessionToken');
+    if (t) socket.auth = { ...socket.auth, sessionToken: t };
+  });
+
   setConnStatus('connecting');
+  socket.on('session-token', (token) => sessionStorage.setItem('sessionToken', token));
   socket.on('connect',       () => setConnStatus('connected'));
   socket.on('disconnect',    (r) => setConnStatus('error', `Disconnected: ${r}`));
   socket.on('connect_error', (err) => {
     const autoRedirect = ['TURNSTILE_FAILED', 'IP_BLOCKED', 'FORBIDDEN', 'INVALID_USERNAME', 'INVALID_AGE', 'INVALID_GENDER'];
     if (autoRedirect.includes(err.message)) {
       sessionStorage.removeItem('chatProfile');
+      sessionStorage.removeItem('sessionToken');
       window.location.href = '/';
       return;
     }

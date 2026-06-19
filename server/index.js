@@ -24,6 +24,8 @@ const { Server } = require('socket.io');
 const path     = require('path');
 const crypto   = require('crypto');
 
+const jwt = require('jsonwebtoken');
+
 const { socketRateLimiter } = require('./rateLimiter');
 const { blockIP, isBlocked } = require('./ipBlockList');
 
@@ -37,9 +39,10 @@ const io         = new Server(httpServer, {
 });
 
 // ─── Environment ─────────────────────────────────────────────────────────────
-const PORT      = process.env.PORT || 3000;
-const CF_SECRET = process.env.CF_TURNSTILE_SECRET || '1x0000000000000000000000000000000AA';
-const CF_SITE   = process.env.CF_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+const PORT       = process.env.PORT || 3000;
+const CF_SECRET  = process.env.CF_TURNSTILE_SECRET || '1x0000000000000000000000000000000AA';
+const CF_SITE    = process.env.CF_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-jwt-secret-change-in-production';
 
 // ─── Volatile In-Memory State ────────────────────────────────────────────────
 // Zero retention: no DB, no FS writes.  Restart = clean slate.
@@ -124,7 +127,7 @@ function log(msg) { process.stderr.write(msg + '\n'); }
 io.use(async (socket, next) => {
   const rawIp = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
   const ip    = String(rawIp).split(',')[0].trim();
-  const { username, age, gender, country, region, cfToken, back_email } = socket.handshake.auth;
+  const { username, age, gender, country, region, cfToken, sessionToken, back_email } = socket.handshake.auth;
 
   // 1. IP block list
   if (isBlocked(ip)) {
@@ -145,7 +148,26 @@ io.use(async (socket, next) => {
     return next(new Error('FORBIDDEN'));
   }
 
-  // 4. Turnstile
+  // 4a. Session JWT — skip Turnstile for reconnects after a server restart
+  if (sessionToken) {
+    try {
+      const decoded = jwt.verify(sessionToken, JWT_SECRET);
+      socket.clientIp = ip;
+      socket.userData = {
+        username: decoded.username,
+        age:      decoded.age,
+        gender:   decoded.gender,
+        country:  decoded.country || '',
+        region:   decoded.region  || '',
+      };
+      log(`[auth] JWT ok ip=${ip} user=${decoded.username}`);
+      return next();
+    } catch {
+      // JWT expired or tampered — fall through to Turnstile
+    }
+  }
+
+  // 4b. Turnstile (first connection or expired JWT)
   const valid = await validateTurnstile(cfToken, ip);
   if (!valid) {
     log(`[auth] TURNSTILE_FAILED ip=${ip}`);
@@ -188,6 +210,15 @@ io.on('connection', (socket) => {
     ip,
     joinedAt:  Date.now(),
   });
+
+  // Issue a session JWT so the client can reconnect after a server restart
+  // without going through Turnstile again. Expires in 24h.
+  const sessionJwt = jwt.sign(
+    { username, age, gender, country, region },
+    JWT_SECRET,
+    { expiresIn: '24h' }
+  );
+  socket.emit('session-token', sessionJwt);
 
   broadcastLobbyUpdate();
   broadcastStats();
