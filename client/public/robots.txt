@@ -5,11 +5,17 @@ Allow: /faq
 Allow: /safety
 Allow: /privacy
 Allow: /terms
+Allow: /omegle-alternative
+Allow: /chatroulette-alternative
+Allow: /anonymous-chat
+Allow: /chat-with-strangers
+Allow: /chat-rooms
+Allow: /random-chat
 
 # Exclude interactive app routes and server internals from indexing
-Disallow: /chat
+Disallow: /chat$
 Disallow: /socket.io/
 Disallow: /config.js
 Disallow: /healthz
 
-Sitemap: https://chattyio.com/sitemap.xml
+Sitemap: https://www.chattyio.com/sitemap.xml
