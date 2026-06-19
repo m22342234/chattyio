@@ -88,10 +88,24 @@ function connectSocket() {
   socket.on('connect',       () => setConnStatus('connected'));
   socket.on('disconnect',    (r) => setConnStatus('error', `Disconnected: ${r}`));
   socket.on('connect_error', (err) => {
+    const autoRedirect = ['TURNSTILE_FAILED', 'IP_BLOCKED', 'FORBIDDEN', 'INVALID_USERNAME', 'INVALID_AGE', 'INVALID_GENDER'];
+    if (autoRedirect.includes(err.message)) {
+      sessionStorage.removeItem('chatProfile');
+      window.location.href = '/';
+      return;
+    }
+    if (err.message === 'RATE_LIMITED') {
+      setConnStatus('error', 'Too many requests');
+      if (userGridEl) userGridEl.innerHTML =
+        `<p class="text-center text-yellow-400 py-12 text-sm">Too many connection attempts.<br>
+         <a href="/chat" class="underline text-indigo-400 text-xs mt-2 inline-block">Try again in 60 seconds</a></p>`;
+      socket.disconnect();
+      return;
+    }
     setConnStatus('error', err.message);
     if (userGridEl) userGridEl.innerHTML =
-      `<p class="text-center text-red-400 py-12 text-sm">Connection error: ${escapeHtml(err.message)}<br>
-       <a href="/" class="underline text-indigo-400 text-xs mt-2 inline-block">Return to login</a></p>`;
+      `<p class="text-center text-red-400 py-12 text-sm">Connection error — please try again.<br>
+       <a href="/" class="underline text-indigo-400 text-xs mt-2 inline-block">Return to home</a></p>`;
     socket.disconnect();
   });
 
